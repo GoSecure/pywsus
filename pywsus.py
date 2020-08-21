@@ -245,7 +245,7 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.INFO)
 
     executable_file = args.executable.read()
-    executable_name = args.executable.name
+    executable_name = os.path.basename(args.executable.name)
     args.executable.close()
 
     update_handler = Update(executable_file, executable_name, client_address='{host}:{port}'.format(host=args.host, port=args.port))
