@@ -1,8 +1,8 @@
 # PyWSUS
-*New name but same old.*
+
 
 ## Summary
-TODO
+As a standalone implementation, the principal idea of this tool is only to be a mock copy of a legitimate WSUS server responding to clients. The MiTM attack should be done from other tools like Bettercap.
 
 ## Installation
 ```
@@ -28,10 +28,30 @@ OPTIONS:
 Example: python pywsus.py -c '-accepteula -s calc.exe' -e PsExec64.exe
 ```
 
+## Mitigations
+From our perspective, the best way to avoid exploitability of this issue would be to switch WSUS deployments over a secured HTTPS channel. The certificate presented by the WSUS server must be validated by the client. Error in validating the certificate will result in the wupdate client closing the connection.
+
+The three major ways of generating a certificate for your WSUS server are:
+- Using an internal PKI for which a Root CA certificate is deployed on domain computers and a certificate signed by that Root CA is used to serve WSUS updates
+- Purchasing a certificate signed by a third-party CA authority trusted in the Windows OS trust store
+- Using a self-signed certificate and push a copy of this certificate on all domain computers using a GPO
+
+On the detection side, a client enrolled with WSUS will report their installed updates inventory periodically. Looking for installed updates that stand-out from the ones approved and deployed could be a way to detect such an attack. This is a preliminary idea that we have not explored yet. Let us know on Twitter or LinkedIn if you have any experience doing this kind of installed patches differential analysis at the scale of an organization.
+
+## Acknowledgements
+For their contributions to this research and blogpost.
+* Olivier Bilodeau from GoSecure
+* Romain Carnus from GoSecure 
+* Laurent Desaulniers from GoSecure 
+* Maxime Nadeau from GoSecure 
+* Mathieu Novis from SecureOps
+
+For writing and researching the original proxy PoC
+* Paul Stone and Alex Chapman from Context Information Security
 
 ## Reference
 * WSUXploit - https://github.com/pimps/wsuxploit
-* WSUSpect Proxy - https://github.com/ctxis/wsuspect-proxy
+* WSUSpect Proxy - https://github.com/pdjstone/wsuspect-proxy
 * WSUSpendu - https://github.com/AlsidOfficial/WSUSpendu
-* Windows Update Services: Client-Server Protocol-
+* Windows Update Services: Client-Server Protocol
 https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/b8a2ad1d-11c4-4b64-a2cc-12771fcb079b?redirectedfrom=MSDN
