@@ -52,7 +52,7 @@ For writing and researching the original proxy PoC
 * Paul Stone and Alex Chapman from Context Information Security
 
 ## Reference
-* WSUS Attacks Part 1: Introducing PyWSUS - https://gosecurestage.wpengine.com/blog/2020/09/02/wsus-attacks-part-1-introducing-pywsus/
+* WSUS Attacks Part 1: Introducing PyWSUS - https://gosecure.net/blog/2020/09/02/wsus-attacks-part-1-introducing-pywsus/
 * WSUXploit - https://github.com/pimps/wsuxploit
 * WSUSpect Proxy - https://github.com/pdjstone/wsuspect-proxy
 * WSUSpendu - https://github.com/AlsidOfficial/WSUSpendu
