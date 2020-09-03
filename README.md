@@ -1,7 +1,4 @@
 # PyWSUS
-
-
-## Summary
 The main goal of this tool is to be a standalone implementation of a legitimate WSUS server which sends malicious responses to clients. The MITM attack itself should be done using other dedicated tools, such as [Bettercap](https://github.com/bettercap/bettercap).
 
 ## Installation
