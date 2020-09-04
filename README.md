@@ -53,5 +53,6 @@ For writing and researching the original proxy PoC
 * WSUXploit - https://github.com/pimps/wsuxploit
 * WSUSpect Proxy - https://github.com/pdjstone/wsuspect-proxy
 * WSUSpendu - https://github.com/AlsidOfficial/WSUSpendu
+* Dummywsus - https://github.com/whatever127/dummywsus
 * Windows Update Services: Client-Server Protocol
 https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/b8a2ad1d-11c4-4b64-a2cc-12771fcb079b?redirectedfrom=MSDN
