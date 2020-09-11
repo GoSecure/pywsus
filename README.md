@@ -37,6 +37,11 @@ The three major ways of generating a certificate for a WSUS server are:
 
 On the detection side, a client enrolled with WSUS will report their installed updates inventory periodically. Looking for installed updates that stand-out from the ones approved and deployed could be a way to detect such attack. This is a preliminary idea that we have not explored yet. Let us know on Twitter or LinkedIn if you have any experience doing this kind of installed patches differential analysis at the scale of an organization.
 
+## Targeting older Windows versions
+On Windows Update Client's older than Windows 10, the client will try to obtain the wuident.cab file before starting the update process.
+
+To avoid licensing issues, this file is not bundled into the pywsus project. To target older versions, you will have to extract the wuident.cab file from a legitimate WSUS server and provide it to the tool using the `--wuident-file` flag. This file can usually be obtained on the WSUS by calling the http://{real-wsus-server}:8530/selfupdate/wuident.cab URL.
+
 ## Acknowledgements
 For their contributions to this research and blogpost.
 * Olivier Bilodeau from GoSecure
