@@ -133,6 +133,7 @@ class S(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length)
 
         post_data_xml = BeautifulSoup(post_data, "xml")
+        data = None
 
         logging.debug("POST Request,\nPath: {path}\nHeaders:\n{headers}\n\nBody:\n{body}\n".format(path=self.path, headers=self.headers, body=post_data_xml.encode_contents()))
 
@@ -199,9 +200,10 @@ class S(BaseHTTPRequestHandler):
             self.wfile.write(data.encode_contents())
 
         else:
-            loggin.warining("SOAP Action not defined")
+            logging.warning("SOAP Action not defined")
+            return
 
-        if data:
+        if data is not None:
             logging.debug("POST Response,\nPath: {path}\nHeaders:\n{headers}\n\nBody:\n{body}\n".format(path=self.path, headers=self.headers, body=data.encode_contents))
         else:
             logging.warning("POST Response without data.")
