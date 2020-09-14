@@ -116,6 +116,12 @@ class S(BaseHTTPRequestHandler):
         self.send_header('X-AspNet-Version', '4.0.30319')
         self.send_header('X-Powered-By', 'ASP.NET')
         self.end_headers()
+        
+    def do_HEAD(self):
+        logging.debug('HEAD request,\nPath: {path}\nHeaders:\n{headers}\n'.format(path=self.path, headers=self.headers))
+
+        self._set_response()
+        self.wfile.write("")
 
     def do_GET(self):
         logging.debug('GET request,\nPath: {path}\nHeaders:\n{headers}\n'.format(path=self.path, headers=self.headers))
