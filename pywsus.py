@@ -141,67 +141,36 @@ class S(BaseHTTPRequestHandler):
 
         if soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/GetConfig"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/b76899b4-ad55-427d-a748-2ecf0829412b
-
-            logging.info('SOAP Action: {}'.format(soap_action))
-
             data = BeautifulSoup(update_handler.get_config_xml, 'xml')
-
-            self._set_response()
-            self.wfile.write(data.encode_contents())
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/GetCookie"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/36a5d99a-a3ca-439d-bcc5-7325ff6b91e2
-
-            logging.info('SOAP Action: {}'.format(soap_action))
-
             data = BeautifulSoup(update_handler.get_cookie_xml, "xml")
-
-            self._set_response()
-            self.wfile.write(data.encode_contents())
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/SyncUpdates"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/6b654980-ae63-4b0d-9fae-2abb516af894
-
-            logging.info('SOAP Action: {}'.format(soap_action))
-
             data = BeautifulSoup(update_handler.sync_updates_xml, "xml")
-
-            self._set_response()
-            self.wfile.write(data.encode_contents())
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/GetExtendedUpdateInfo"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/862adc30-a9be-4ef7-954c-13934d8c1c77
-
-            logging.info('SOAP Action: {}'.format(soap_action))
-
             data = BeautifulSoup(update_handler.get_extended_update_info_xml, "xml")
-
-            self._set_response()
-            self.wfile.write(data.encode_contents())
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/ReportEventBatch"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/da9f0561-1e57-4886-ad05-57696ec26a78
-
-            logging.info(soap_action)
-
             data = BeautifulSoup(update_handler.report_event_batch_xml, "xml")
-
-            self._set_response()
-            self.wfile.write(data.encode_contents())
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/SimpleAuthWebService/GetAuthorizationCookie"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/44767c55-1e41-4589-aa01-b306e0134744
-
-            logging.info('SOAP Action: {}'.format(soap_action))
-
             data = BeautifulSoup(update_handler.get_authorization_cookie_xml, "xml")
 
-            self._set_response()
-            self.wfile.write(data.encode_contents())
-
         else:
-            logging.warning("SOAP Action not defined")
+            logging.warning("SOAP Action not handled")
+            logging.info('SOAP Action: {}'.format(soap_action))
             return
+
+        self._set_response()
+        self.wfile.write(data.encode_contents())
+        logging.info('SOAP Action: {}'.format(soap_action))
 
         if data is not None:
             logging.debug("POST Response,\nPath: {path}\nHeaders:\n{headers}\n\nBody:\n{body}\n".format(path=self.path, headers=self.headers, body=data.encode_contents))
