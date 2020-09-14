@@ -22,6 +22,7 @@ class Update:
         self.get_extended_update_info_xml = ''
         self.report_event_batch_xml = ''
         self.get_authorization_cookie_xml = ''
+        self.register_computer_xml = ''
 
         self.revision_ids = [randint(900000, 999999), randint(900000, 999999)]
         self.deployment_ids = [randint(80000, 99999), randint(80000, 99999)]
@@ -77,6 +78,10 @@ class Update:
                 self.get_authorization_cookie_xml = file.read().format(cookie=self.get_cookie())
                 file.close()
 
+            with open('{}/resources/register-computer.xml'.format(base_path), 'r') as file:
+                self.register_computer_xml = file.read()
+                file.close()
+
         except Exception as err:
             logging.error('Error: {err}'.format(err=err))
             sys.exit(1)
@@ -116,7 +121,7 @@ class S(BaseHTTPRequestHandler):
         self.send_header('X-AspNet-Version', '4.0.30319')
         self.send_header('X-Powered-By', 'ASP.NET')
         self.end_headers()
-        
+
     def do_HEAD(self):
         logging.debug('HEAD request,\nPath: {path}\nHeaders:\n{headers}\n'.format(path=self.path, headers=self.headers))
 
@@ -142,6 +147,8 @@ class S(BaseHTTPRequestHandler):
     def do_POST(self):
 
         content_length = int(self.headers['Content-Length'])
+
+        data = None
         post_data = self.rfile.read(content_length)
 
         post_data_xml = BeautifulSoup(post_data, "xml")
@@ -210,8 +217,18 @@ class S(BaseHTTPRequestHandler):
             self._set_response()
             self.wfile.write(data.encode_contents())
 
+        elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/RegisterComputer"':
+            # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/b0f2a41f-4b96-42a5-b84f-351396293033
+
+            logging.info('SOAP Action: {}'.format(soap_action))
+
+            data = BeautifulSoup(update_handler.register_computer_xml, "xml")
+
+            self._set_response()
+            self.wfile.write(data.encode_contents())
+
         else:
-            logging.warining("SOAP Action not defined")
+            logging.warning("SOAP Action '{}' not defined".format(soap_action))
 
         if data:
             logging.debug("POST Response,\nPath: {path}\nHeaders:\n{headers}\n\nBody:\n{body}\n".format(path=self.path, headers=self.headers, body=data.encode_contents))
