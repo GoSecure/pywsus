@@ -131,7 +131,7 @@ class S(BaseHTTPRequestHandler):
     def do_GET(self):
         logging.debug('GET request,\nPath: {path}\nHeaders:\n{headers}\n'.format(path=self.path, headers=self.headers))
 
-        if self.path.find("selfupdate/wuident.cab"):
+        if "selfupdate/wuident.cab" in self.path:
             logging.info("Target is not Windows 10. wuident.cab file requested.")
             if update_handler.wuident_executable:
                 self._set_response(True)
@@ -217,6 +217,7 @@ class S(BaseHTTPRequestHandler):
             self._set_response()
             self.wfile.write(data.encode_contents())
 
+        # TODO
         #elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/RegisterComputer"':
         #    # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/b0f2a41f-4b96-42a5-b84f-351396293033
         #
