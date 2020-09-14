@@ -217,15 +217,15 @@ class S(BaseHTTPRequestHandler):
             self._set_response()
             self.wfile.write(data.encode_contents())
 
-        elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/RegisterComputer"':
-            # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/b0f2a41f-4b96-42a5-b84f-351396293033
-
-            logging.info('SOAP Action: {}'.format(soap_action))
-
-            data = BeautifulSoup(update_handler.register_computer_xml, "xml")
-
-            self._set_response()
-            self.wfile.write(data.encode_contents())
+        #elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/RegisterComputer"':
+        #    # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/b0f2a41f-4b96-42a5-b84f-351396293033
+        #
+        #    logging.info('SOAP Action: {}'.format(soap_action))
+        #
+        #    data = BeautifulSoup(update_handler.register_computer_xml, "xml")
+        #
+        #    self._set_response()
+        #    self.wfile.write(data.encode_contents())
 
         else:
             logging.warning("SOAP Action '{}' not defined".format(soap_action))
