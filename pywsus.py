@@ -126,7 +126,7 @@ class S(BaseHTTPRequestHandler):
         logging.debug('HEAD request,\nPath: {path}\nHeaders:\n{headers}\n'.format(path=self.path, headers=self.headers))
 
         self._set_response()
-        self.wfile.write("")
+        self.wfile.write(b'')
 
     def do_GET(self):
         logging.debug('GET request,\nPath: {path}\nHeaders:\n{headers}\n'.format(path=self.path, headers=self.headers))
