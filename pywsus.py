@@ -14,7 +14,7 @@ import os
 import argparse
 
 
-class Update:
+class WSUSUpdateHandler:
     def __init__(self, executable_file, executable_name, client_address):
         self.get_config_xml = ''
         self.get_cookie_xml = ''
@@ -101,7 +101,7 @@ class Update:
             uuids=self.uuids, revision_ids=self.revision_ids, deployment_ids=self.deployment_ids, executable=self.executable_name, sha1=self.sha1, sha256=self.sha256)
 
 
-class S(BaseHTTPRequestHandler):
+class WSUSBaseServer(BaseHTTPRequestHandler):
     def _set_response(self, serveEXE=False):
 
         self.send_response(200)
@@ -178,7 +178,7 @@ class S(BaseHTTPRequestHandler):
             logging.warning("POST Response without data.")
 
 
-def run(host, port, server_class=HTTPServer, handler_class=S):
+def run(host, port, server_class=HTTPServer, handler_class=WSUSBaseServer):
     server_address = (host, port)
     httpd = server_class(server_address, handler_class)
 
@@ -219,7 +219,7 @@ if __name__ == '__main__':
     executable_name = os.path.basename(args.executable.name)
     args.executable.close()
 
-    update_handler = Update(executable_file, executable_name, client_address='{host}:{port}'.format(host=args.host, port=args.port))
+    update_handler = WSUSUpdateHandler(executable_file, executable_name, client_address='{host}:{port}'.format(host=args.host, port=args.port))
 
     update_handler.set_filedigest()
     update_handler.set_resources_xml(args.command)
