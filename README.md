@@ -49,6 +49,7 @@ For writing and researching the original proxy PoC
 * Paul Stone and Alex Chapman from Context Information Security
 
 ## Reference
+* WSuspicious, turn-key CVE-2020-1013 local privilege escalation exploit - https://github.com/GoSecure/WSuspicious
 * WSUS Attacks Part 1: Introducing PyWSUS - https://www.gosecure.net/blog/2020/09/03/wsus-attacks-part-1-introducing-pywsus/
 * WSUXploit - https://github.com/pimps/wsuxploit
 * WSUSpect Proxy - https://github.com/pdjstone/wsuspect-proxy
