@@ -18,6 +18,7 @@ class WSUSUpdateHandler:
     def __init__(self, executable_file, executable_name, client_address):
         self.get_config_xml = ''
         self.get_cookie_xml = ''
+        self.register_computer_xml = ''
         self.sync_updates_xml = ''
         self.get_extended_update_info_xml = ''
         self.report_event_batch_xml = ''
@@ -55,6 +56,10 @@ class WSUSUpdateHandler:
 
             with open('{}/resources/get-cookie.xml'.format(path), 'r') as file:
                 self.get_cookie_xml = file.read().format(expire=self.get_expire(), cookie=self.get_cookie())
+                file.close()
+
+            with open('{}/resources/register-computer.xml'.format(path), 'r') as file:
+                self.register_computer_xml = file.read()
                 file.close()
 
             with open('{}/resources/sync-updates.xml'.format(path), 'r') as file:
@@ -146,6 +151,10 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/GetCookie"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/36a5d99a-a3ca-439d-bcc5-7325ff6b91e2
             data = BeautifulSoup(update_handler.get_cookie_xml, "xml")
+
+        elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/RegisterComputer"':
+            # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/36a5d99a-a3ca-439d-bcc5-7325ff6b91e2
+            data = BeautifulSoup(update_handler.register_computer_xml, "xml")
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/SyncUpdates"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/6b654980-ae63-4b0d-9fae-2abb516af894
