@@ -114,6 +114,7 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
         else:
             self.send_header('Content-type', 'text/xml; chartset=utf-8')
 
+        self.send_header("Content-Length", len(update_handler.executable))
         self.send_header('X-AspNet-Version', '4.0.30319')
         self.send_header('X-Powered-By', 'ASP.NET')
         self.end_headers()
