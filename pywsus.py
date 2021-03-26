@@ -118,6 +118,14 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
         self.send_header('X-Powered-By', 'ASP.NET')
         self.end_headers()
 
+    def do_HEAD(self):
+        logging.debug('HEAD request,\nPath: {path}\nHeaders:\n{headers}\n'.format(path=self.path, headers=self.headers))
+
+        if self.path.find(".exe"):
+            logging.info("Requested: {path}".format(path=self.path))
+
+            self._set_response(True)
+
     def do_GET(self):
         logging.debug('GET request,\nPath: {path}\nHeaders:\n{headers}\n'.format(path=self.path, headers=self.headers))
 
