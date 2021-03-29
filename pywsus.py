@@ -114,9 +114,18 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
         else:
             self.send_header('Content-type', 'text/xml; chartset=utf-8')
 
+        self.send_header("Content-Length", len(update_handler.executable))
         self.send_header('X-AspNet-Version', '4.0.30319')
         self.send_header('X-Powered-By', 'ASP.NET')
         self.end_headers()
+
+    def do_HEAD(self):
+        logging.debug('HEAD request,\nPath: {path}\nHeaders:\n{headers}\n'.format(path=self.path, headers=self.headers))
+
+        if self.path.find(".exe"):
+            logging.info("Requested: {path}".format(path=self.path))
+
+            self._set_response(True)
 
     def do_GET(self):
         logging.debug('GET request,\nPath: {path}\nHeaders:\n{headers}\n'.format(path=self.path, headers=self.headers))
