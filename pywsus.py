@@ -104,17 +104,18 @@ class WSUSUpdateHandler:
 class WSUSBaseServer(BaseHTTPRequestHandler):
     def _set_response(self, serveEXE=False):
 
+        self.protocol_version = 'HTTP/1.1'
         self.send_response(200)
-        self.server_version = 'Microsoft-IIS/10.0'
+        # self.server_version = 'Microsoft-IIS/10.0'
         # self.send_header('Accept-Ranges', 'bytes')
         self.send_header('Cache-Control', 'private')
 
         if serveEXE:
             self.send_header('Content-Type', 'application/octet-stream')
+            self.send_header("Content-Length", len(update_handler.executable))
         else:
             self.send_header('Content-type', 'text/xml; chartset=utf-8')
 
-        self.send_header("Content-Length", len(update_handler.executable))
         self.send_header('X-AspNet-Version', '4.0.30319')
         self.send_header('X-Powered-By', 'ASP.NET')
         self.end_headers()
@@ -179,6 +180,7 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
 
         self._set_response()
         self.wfile.write(data.encode_contents())
+
         logging.info('SOAP Action: {}'.format(soap_action))
 
         if data is not None:
