@@ -169,6 +169,12 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/da9f0561-1e57-4886-ad05-57696ec26a78
             data = BeautifulSoup(update_handler.report_event_batch_xml, "xml")
 
+            post_data_report = BeautifulSoup(post_data, "xml")
+            logging.info('Client Report: {targetID}, {computerBrand}, {computerModel}, {extendedData}.'.format(targetID=post_data_report.TargetID.text,
+                                                                                                computerBrand=post_data_report.ComputerBrand.text,
+                                                                                                computerModel=post_data_report.ComputerModel.text,
+                                                                                                extendedData=post_data_report.ExtendedData.ReplacementStrings.string)) 
+
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/SimpleAuthWebService/GetAuthorizationCookie"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/44767c55-1e41-4589-aa01-b306e0134744
             data = BeautifulSoup(update_handler.get_authorization_cookie_xml, "xml")
