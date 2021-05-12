@@ -153,7 +153,7 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
             data = BeautifulSoup(update_handler.get_cookie_xml, "xml")
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/RegisterComputer"':
-            # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/36a5d99a-a3ca-439d-bcc5-7325ff6b91e2
+            # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/b0f2a41f-4b96-42a5-b84f-351396293033
             data = BeautifulSoup(update_handler.register_computer_xml, "xml")
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/SyncUpdates"':
