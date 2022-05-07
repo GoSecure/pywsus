@@ -51,7 +51,7 @@ For writing and researching the original proxy PoC
 ## Reference
 * WSuspicious, turn-key CVE-2020-1013 local privilege escalation exploit - https://github.com/GoSecure/WSuspicious
 * WSUS Attacks Part 1: Introducing PyWSUS - https://www.gosecure.net/blog/2020/09/03/wsus-attacks-part-1-introducing-pywsus/
-* WSUS Attacks Part 2: WSUS Attacks Part 2: CVE-2020-1013 a Windows 10 Local Privilege Escalation 1-Day: https://github.com/GoSecure/WSuspicious
+* WSUS Attacks Part 2: WSUS Attacks Part 2: CVE-2020-1013 a Windows 10 Local Privilege Escalation 1-Day: https://www.gosecure.net/blog/2020/09/08/wsus-attacks-part-2-cve-2020-1013-a-windows-10-local-privilege-escalation-1-day/
 * WSUS Attacks Part 3: GoSecure Investigates Abusing Windows Server Update Services (WSUS) to Enable NTLM Relaying Attacks: https://www.gosecure.net/blog/2021/11/22/gosecure-investigates-abusing-windows-server-update-services-wsus-to-enable-ntlm-relaying-attacks/
 * WSUXploit - https://github.com/pimps/wsuxploit
 * WSUSpect Proxy - https://github.com/pdjstone/wsuspect-proxy
