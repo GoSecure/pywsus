@@ -71,7 +71,7 @@ class WSUSUpdateHandler:
 
             with open('{}/resources/get-extended-update-info.xml'.format(path), 'r') as file:
                 self.get_extended_update_info_xml = file.read().format(revision_id1=self.revision_ids[0], revision_id2=self.revision_ids[1], sha1=self.sha1, sha256=self.sha256,
-                                                                       filename=self.executable_name, file_size=len(executable_file), command=html.escape(html.escape(command)),
+                                                                       filename=self.executable_name, file_size=len(self.executable), command=html.escape(html.escape(command)),
                                                                        url='http://{host}/{path}/{executable}'.format(host=self.client_address, path=uuid.uuid4(), executable=self.executable_name))
                 file.close()
 
@@ -233,7 +233,7 @@ def parse_args():
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+def main():
     args = parse_args()
 
     if args.verbose:
@@ -245,6 +245,7 @@ if __name__ == '__main__':
     executable_name = os.path.basename(args.executable.name)
     args.executable.close()
 
+    global update_handler
     update_handler = WSUSUpdateHandler(executable_file, executable_name, client_address='{host}:{port}'.format(host=args.host, port=args.port))
 
     update_handler.set_filedigest()
@@ -253,3 +254,7 @@ if __name__ == '__main__':
     logging.info(update_handler)
 
     run(host=args.host, port=args.port)
+
+
+if __name__ == '__main__':
+    main()
