@@ -2,10 +2,19 @@
 The main goal of this tool is to be a standalone implementation of a legitimate WSUS server which sends malicious responses to clients. The MITM attack itself should be done using other dedicated tools, such as [Bettercap](https://github.com/bettercap/bettercap).
 
 ## Installation
+
+### Using `pipx`
 ```
+pipx install git+https://github.com/GoSecure/pywsus
+```
+
+### Using `virtualenv`
+```
+git clone https://github.com/GoSecure/pywsus
+cd pywsus
 virtualenv -p /usr/bin/python3 ./venv
 source ./venv/bin/activate
-pip install -r ./requirements.txt
+python setup.py install
 ```
 
 ## Usage
