@@ -2,27 +2,36 @@
 The main goal of this tool is to be a standalone implementation of a legitimate WSUS server which sends malicious responses to clients. The MITM attack itself should be done using other dedicated tools, such as [Bettercap](https://github.com/bettercap/bettercap).
 
 ## Installation
+
+### Using `pipx`
 ```
+pipx install git+https://github.com/GoSecure/pywsus
+```
+
+### Using `virtualenv`
+```
+git clone https://github.com/GoSecure/pywsus
+cd pywsus
 virtualenv -p /usr/bin/python3 ./venv
 source ./venv/bin/activate
-pip install -r ./requirements.txt
+python setup.py install
 ```
 
 ## Usage
 ```
-Usage: pywsus.py [-h] -H HOST [-p PORT] -c COMMAND -e EXECUTABLE [-v]
+usage: pywsus [-h] -H HOST [-p PORT] -e EXECUTABLE -c COMMAND [-v]
 
 OPTIONS:
   -h, --help            show this help message and exit
   -H HOST, --host HOST  The listening adress.
   -p PORT, --port PORT  The listening port.
-  -c COMMAND, --command COMMAND
-                        The parameters for the current payload
   -e EXECUTABLE, --executable EXECUTABLE
-                        The executable to returned to the victim. It has to be signed by Microsoft--e.g., psexec
-  -v, --verbose         increase output verbosity.
+                        The Microsoft signed executable returned to the client.
+  -c COMMAND, --command COMMAND
+                        The parameters for the current executable.
+  -v, --verbose         Increase output verbosity.
 
-Example: python pywsus.py -c '/accepteula /s calc.exe' -e PsExec64.exe
+Example: python pywsus.py -H X.X.X.X -p 8530 -e PsExec64.exe -c "-accepteula -s calc.exe"
 ```
 
 ## Mitigations
