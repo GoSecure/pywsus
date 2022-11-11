@@ -3,6 +3,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from bs4 import BeautifulSoup
 from random import randint
+from functools import partial
 import uuid
 import html
 import datetime
@@ -107,6 +108,10 @@ class WSUSUpdateHandler:
 
 
 class WSUSBaseServer(BaseHTTPRequestHandler):
+    def __init__(self, update_handler, *args, **kwargs):
+        self.update_handler = update_handler
+        super().__init__(*args, **kwargs)
+
     def _set_response(self, serveEXE=False):
 
         self.protocol_version = 'HTTP/1.1'
@@ -117,7 +122,7 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
 
         if serveEXE:
             self.send_header('Content-Type', 'application/octet-stream')
-            self.send_header("Content-Length", len(update_handler.executable))
+            self.send_header("Content-Length", len(self.update_handler.executable))
         else:
             self.send_header('Content-type', 'text/xml; chartset=utf-8')
 
@@ -140,7 +145,7 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
             logging.info("Requested: {path}".format(path=self.path))
 
             self._set_response(True)
-            self.wfile.write(update_handler.executable)
+            self.wfile.write(self.update_handler.executable)
 
     def do_POST(self):
 
@@ -156,27 +161,27 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
 
         if soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/GetConfig"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/b76899b4-ad55-427d-a748-2ecf0829412b
-            data = BeautifulSoup(update_handler.get_config_xml, 'xml')
+            data = BeautifulSoup(self.update_handler.get_config_xml, 'xml')
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/GetCookie"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/36a5d99a-a3ca-439d-bcc5-7325ff6b91e2
-            data = BeautifulSoup(update_handler.get_cookie_xml, "xml")
+            data = BeautifulSoup(self.update_handler.get_cookie_xml, "xml")
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/RegisterComputer"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/b0f2a41f-4b96-42a5-b84f-351396293033
-            data = BeautifulSoup(update_handler.register_computer_xml, "xml")
+            data = BeautifulSoup(self.update_handler.register_computer_xml, "xml")
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/SyncUpdates"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/6b654980-ae63-4b0d-9fae-2abb516af894
-            data = BeautifulSoup(update_handler.sync_updates_xml, "xml")
+            data = BeautifulSoup(self.update_handler.sync_updates_xml, "xml")
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/GetExtendedUpdateInfo"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/862adc30-a9be-4ef7-954c-13934d8c1c77
-            data = BeautifulSoup(update_handler.get_extended_update_info_xml, "xml")
+            data = BeautifulSoup(self.update_handler.get_extended_update_info_xml, "xml")
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/ReportEventBatch"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/da9f0561-1e57-4886-ad05-57696ec26a78
-            data = BeautifulSoup(update_handler.report_event_batch_xml, "xml")
+            data = BeautifulSoup(self.update_handler.report_event_batch_xml, "xml")
 
             post_data_report = BeautifulSoup(post_data, "xml")
             logging.info('Client Report: {targetID}, {computerBrand}, {computerModel}, {extendedData}.'.format(targetID=post_data_report.TargetID.text,
@@ -186,7 +191,7 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
 
         elif soap_action == '"http://www.microsoft.com/SoftwareDistribution/Server/SimpleAuthWebService/GetAuthorizationCookie"':
             # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wusp/44767c55-1e41-4589-aa01-b306e0134744
-            data = BeautifulSoup(update_handler.get_authorization_cookie_xml, "xml")
+            data = BeautifulSoup(self.update_handler.get_authorization_cookie_xml, "xml")
 
         else:
             logging.warning("SOAP Action not handled")
@@ -204,9 +209,10 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
             logging.warning("POST Response without data.")
 
 
-def run(host, port, server_class=HTTPServer, handler_class=WSUSBaseServer):
+def run(host, port, update_handler, server_class=HTTPServer, handler_class=WSUSBaseServer):
     server_address = (host, port)
-    httpd = server_class(server_address, handler_class)
+    http_handler = partial(handler_class, update_handler)
+    httpd = server_class(server_address, http_handler)
 
     logging.info('Starting httpd...\n')
 
@@ -245,7 +251,6 @@ def main():
     executable_name = os.path.basename(args.executable.name)
     args.executable.close()
 
-    global update_handler
     update_handler = WSUSUpdateHandler(executable_file, executable_name, client_address='{host}:{port}'.format(host=args.host, port=args.port))
 
     update_handler.set_filedigest()
@@ -253,7 +258,7 @@ def main():
 
     logging.info(update_handler)
 
-    run(host=args.host, port=args.port)
+    run(host=args.host, port=args.port, update_handler=update_handler)
 
 
 if __name__ == '__main__':
