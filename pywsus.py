@@ -140,7 +140,10 @@ class WSUSBaseServer(BaseHTTPRequestHandler):
             logging.info("Requested: {path}".format(path=self.path))
 
             self._set_response(True)
-            self.wfile.write(update_handler.executable)
+            try:
+                self.wfile.write(update_handler.executable)
+            except (ConnectionResetError, BrokenPipeError):
+                logging.debug("Connection reset during EXE send (BITS probe, normal)")
 
     def do_POST(self):
 
