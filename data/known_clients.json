@@ -1,0 +1,8 @@
+{
+  "_comment": "Known WSUS clients — { ip: {build, arch, os_desc} }. Auto-populated by pywsus.",
+  "172.16.147.102": {
+    "build": 26200,
+    "arch": "AMD64",
+    "os_desc": "Windows 10 Pro"
+  }
+}
