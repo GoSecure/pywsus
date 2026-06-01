@@ -1,0 +1,17 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+    <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <SyncUpdatesResponse
+            xmlns="http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService">
+            <SyncUpdatesResult>
+                <NewUpdates></NewUpdates>
+                <Truncated>false</Truncated>
+                <NewCookie>
+                    <Expiration>{expire}</Expiration>
+                    <EncryptedData>{cookie}</EncryptedData>
+                </NewCookie>
+                <DriverSyncNotNeeded>true</DriverSyncNotNeeded>
+            </SyncUpdatesResult>
+        </SyncUpdatesResponse>
+    </s:Body>
+</s:Envelope>
