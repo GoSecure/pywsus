@@ -4,6 +4,44 @@ The main goal of this tool is to be a standalone implementation of a legitimate 
 
 The MITM attack itself should be done using other dedicated tools, such as [Bettercap](https://github.com/bettercap/bettercap).
 
+## Prerequisites
+
+Some conditions must be met to make a successful exploitation possible. These prerequisites are:
+
+### 1. WSUS must be enabled
+
+Check the following registry key on the targeted machine to see if WSUS is enabled (`Ox1` means enabled):
+
+```cmd
+reg query HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU /v UseWUServer
+```
+
+### 2. WUServer must use HTTP
+
+Check the following registry key on the targeted machine to see if the WUServer URL is using the HTTP protocol (`https://` will **not** work):
+
+```cmd
+reg query HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate /v WUServer
+```
+
+### 3. UpdateServiceUrlAlternate must use HTTP
+
+Check the following registry key on the targeted machine to see if the alternate server is defined and if the URL is using the HTTP protocol (`https://` will **not** work):
+
+```cmd
+reg query HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate /v UpdateServiceUrlAlternate
+```
+
+### 4. WUServer must be vulnerable to MITM attacks
+
+You must be able to perform a MITM attack to intercept the traffic between the targeted machine and WindowsUpdate server.
+
+You can use other dedicated tools, such as [Bettercap](https://github.com/bettercap/bettercap), to perform the MITM attack.
+
+### 5. UpdateServiceUrlAlternate must be vulnerable to MITM attacks
+
+If defined, you must be able to perform a MITM attack to intercept the traffic between the targeted machine and alternate server.
+
 ## Installation
 
 ```
